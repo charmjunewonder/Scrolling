@@ -34,7 +34,12 @@ public class CharacterController : MonoBehaviour {
 			Vector3 pos = transform.position;
 			pos.y -= 0.2f;
 			transform.position = pos;
-			
 		}
+
+
+	}
+
+	public void changeSize(float increment){
+		transform.localScale += new Vector3(increment, increment*0.5f, 0);
 	}
 }
