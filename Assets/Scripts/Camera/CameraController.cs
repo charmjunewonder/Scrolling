@@ -5,7 +5,7 @@ public class CameraController : MonoBehaviour {
 
 	public GameObject character;
 	public float cameraSize;
-
+	public float ground = -45.51134f;
 	private float scrollingTimer;
 	private bool isZoomingOut;
 	private bool isZoomingIn;
@@ -39,12 +39,12 @@ public class CameraController : MonoBehaviour {
             pos.y += character.transform.position.y - previousCharacterPos.y;
             transform.position = pos;
         }
-
+        //Debug.Log("fjsldk " + (transform.position - character.transform.position) * (1- 0.5f / cameraSize));
         if (Input.GetAxis("Mouse ScrollWheel") > 0 && transform.GetComponent<Camera>().orthographicSize > 10 && !scrollingLock) 
 		{
 			isZoomingIn = true;
             scrollingLock = true;
-            targetPosition = (character.transform.position - transform.position) * 3 / cameraSize;
+            //targetPosition = (transform.position - character.transform.position) * (1 - 3f / cameraSize) + character.transform.position;
             
 		}
 
@@ -52,21 +52,27 @@ public class CameraController : MonoBehaviour {
 		{
 			isZoomingOut = true;
             scrollingLock = true;
-            targetPosition = -(character.transform.position - transform.position) * 3 / cameraSize;
+            //targetPosition = (transform.position - character.transform.position) * (1 + 0.5f / cameraSize) + character.transform.position;
             
 		}
 
         if (isZoomingOut && transform.GetComponent<Camera>().orthographicSize < 50)
         {
-            Debug.Log(targetPosition);
+            //Debug.Log(targetPosition);
 			scrollingTimer += 0.2f;
 
-			transform.GetComponent<Camera>().orthographicSize += 0.5f;
+			transform.GetComponent<Camera>().orthographicSize *= 1.0f/0.95f;
 
-            character.GetComponent<CharacterController>().changeSize(0.01f);
-            
-            transform.position += new Vector3(targetPosition.x, targetPosition.y, 0) / 6;
+            character.GetComponent<CharacterController>().changeSize(1f/0.95f);
+            Vector3 pos = character.transform.position;
+            pos.y = ground + (pos.y - ground) * 1.0f/0.95f;
+            character.transform.position = pos;
 
+            targetPosition.x = (transform.position.x - character.transform.position.x) * 1.0f/0.95f + character.transform.position.x;
+            targetPosition.y = (transform.position.y - ground) * 1.0f/0.95f + ground;
+
+            transform.position = new Vector3(targetPosition.x, targetPosition.y, -10);
+			Debug.Log("Out: " + transform.position + " " + character.transform.position);
             if (scrollingTimer > 1 || transform.GetComponent<Camera>().orthographicSize >= 50)
 			{
 				isZoomingOut = false;
@@ -76,15 +82,19 @@ public class CameraController : MonoBehaviour {
 		}
         if (isZoomingIn && transform.GetComponent<Camera>().orthographicSize > 10)
         {
-            Debug.Log(targetPosition);
+            //Debug.Log(targetPosition);
 			scrollingTimer += 0.2f;
             
-			transform.GetComponent<Camera>().orthographicSize -= 0.5f;
-            
-            character.GetComponent<CharacterController>().changeSize(-0.01f);
+			transform.GetComponent<Camera>().orthographicSize *= 0.95f;
+            Vector3 pos = character.transform.position;
+            pos.y = ground + (pos.y - ground) * 0.95f;
+            character.transform.position = pos;
+            character.GetComponent<CharacterController>().changeSize(0.95f);
+            targetPosition.x = (transform.position.x - character.transform.position.x) * 0.95f + character.transform.position.x;
+            targetPosition.y = (transform.position.y - ground) * 0.95f + ground;
 
-            transform.position += new Vector3(targetPosition.x, targetPosition.y, 0) / 6;
-
+            transform.position = new Vector3(targetPosition.x, targetPosition.y, -10);
+			Debug.Log("In: " + transform.position + " " + character.transform.position);
             if (scrollingTimer > 1 || transform.GetComponent<Camera>().orthographicSize <= 10)
 			{
 				isZoomingIn = false;
