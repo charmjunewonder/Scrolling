@@ -7,6 +7,7 @@ public class CameraController : MonoBehaviour {
 	public float cameraSize;
 	public float ground = -45.51134f;
     public GameObject blackPlane;
+    public GameObject UI_Cube_Number;
 
 	private float scrollingTimer;
 	private bool isZoomingOut;
@@ -14,6 +15,7 @@ public class CameraController : MonoBehaviour {
 	private Vector3 previousCharacterPos;
     
     private Vector3 targetPosition;
+    
 
     private bool scrollingLock;
 	// Use this for initialization
@@ -22,6 +24,8 @@ public class CameraController : MonoBehaviour {
 		scrollingTimer = 0;
 		previousCharacterPos = Vector3.zero;
         blackPlane.renderer.material.SetColor("_Color", new Color(0, 0, 0, 0));
+        UI_Cube_Number.GetComponent<TextMesh>().text = " ";
+        UI_Cube_Number.GetComponent<TextMesh>().text = "0/5";
 	}
 	
 	// Update is called once per frame
@@ -36,9 +40,8 @@ public class CameraController : MonoBehaviour {
         if (hit.collider != null)
         {
             groundPos = hit.point;
-            //Debug.DrawLine(hit.point, hit.normal, new Color(1, 0, 0), 10);
+            Debug.DrawLine(hit.point, hit.normal, new Color(1, 0, 0), 10);
         }
-        Debug.Log(groundPos);
 
 		if (Mathf.Abs(character.transform.position.x - transform.position.x) > cameraSize * 2 * 0.5f) {
 			Vector3 pos = transform.position;
@@ -52,32 +55,27 @@ public class CameraController : MonoBehaviour {
             pos.y += character.transform.position.y - previousCharacterPos.y;
             transform.position = pos;
         }
-        //Debug.Log("fjsldk " + (transform.position - character.transform.position) * (1- 0.5f / cameraSize));
         if (Input.GetAxis("Mouse ScrollWheel") > 0 && transform.GetComponent<Camera>().orthographicSize > 10 && !scrollingLock) 
 		{
 			isZoomingIn = true;
             scrollingLock = true;
-            //targetPosition = (transform.position - character.transform.position) * (1 - 3f / cameraSize) + character.transform.position;
 		}
 
         if (Input.GetAxis("Mouse ScrollWheel") < 0 && transform.GetComponent<Camera>().orthographicSize < 50 && !scrollingLock)
 		{
 			isZoomingOut = true;
             scrollingLock = true;
-            //targetPosition = (transform.position - character.transform.position) * (1 + 0.5f / cameraSize) + character.transform.position;
 		}
 
         if (isZoomingOut && transform.GetComponent<Camera>().orthographicSize < 50)
         {
-            //Debug.Log(targetPosition);
 			scrollingTimer += 0.2f;
 
 			transform.GetComponent<Camera>().orthographicSize *= 1.0f/0.95f;
 
             character.GetComponent<CharacterController>().changeSize(1f/0.95f);
-            Vector3 pos = character.transform.position;
-            pos.y = groundPos.y + (pos.y - groundPos.y) * 1.0f / 0.95f;
-            character.transform.position = pos;
+            character.GetComponent<CharacterController>().changePosition(groundPos, 1f / 0.95f);
+
 
             targetPosition.x = (transform.position.x - character.transform.position.x) * 1.0f/0.95f + character.transform.position.x;
             targetPosition.y = (transform.position.y - groundPos.y) * 1.0f / 0.95f + groundPos.y;
@@ -97,10 +95,11 @@ public class CameraController : MonoBehaviour {
 			scrollingTimer += 0.2f;
             
 			transform.GetComponent<Camera>().orthographicSize *= 0.95f;
-            Vector3 pos = character.transform.position;
-            pos.y = groundPos.y + (pos.y - groundPos.y) * 0.95f;
-            character.transform.position = pos;
+
+            character.GetComponent<CharacterController>().changePosition(groundPos, 0.95f);
             character.GetComponent<CharacterController>().changeSize(0.95f);
+
+
             targetPosition.x = (transform.position.x - character.transform.position.x) * 0.95f + character.transform.position.x;
             targetPosition.y = (transform.position.y - groundPos.y) * 0.95f + groundPos.y;
 
@@ -133,8 +132,32 @@ public class CameraController : MonoBehaviour {
             yield return new WaitForSeconds(0.02f);
         }
         Vector3 pos = character.transform.position;
-        pos.x = 541.8f;
-        pos.y = -946.1f;
+        pos.x = 686.8f;
+        pos.y = -666.1f;
+        character.transform.position = pos;
+        blackPlane.SetActive(false);
+        blackPlane.renderer.material.SetColor("_Color", new Color(0, 0, 0, 0));
+    }
+
+    public void fakeToBlackUp()
+    {
+        blackPlane.renderer.material.SetColor("_Color", new Color(0, 0, 0, 0));
+        blackPlane.SetActive(true);
+        StartCoroutine(fakeUp());
+    }
+
+    IEnumerator fakeUp()
+    {
+        float num = 0;
+        for (int i = 0; i < 50; i++)
+        {
+            num += 0.02f;
+            blackPlane.renderer.material.SetColor("_Color", new Color(0, 0, 0, num));
+            yield return new WaitForSeconds(0.02f);
+        }
+        Vector3 pos = character.transform.position;
+        pos.x = 555;
+        pos.y = -49f;
         character.transform.position = pos;
         blackPlane.SetActive(false);
         blackPlane.renderer.material.SetColor("_Color", new Color(0, 0, 0, 0));
