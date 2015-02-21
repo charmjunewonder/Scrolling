@@ -65,7 +65,7 @@ public class CameraController : MonoBehaviour {
             scrollingLock = true;
 		}
 
-        if (Input.GetAxis("Mouse ScrollWheel") < 0 && transform.GetComponent<Camera>().orthographicSize < 50 && !scrollingLock)
+        if (character.GetComponent<CharacterController>().allowToScale() && Input.GetAxis("Mouse ScrollWheel") < 0 && transform.GetComponent<Camera>().orthographicSize < 50 && !scrollingLock)
 		{
 			isZoomingOut = true;
             scrollingLock = true;
