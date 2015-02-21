@@ -103,7 +103,6 @@ public class CharacterController : MonoBehaviour {
         else
         {
             jumpCount = 0;
-            Debug.Log(transform.rigidbody2D.velocity);
             //transform.rigidbody2D.velocity = new Vector2(30 * camera.GetComponent<Camera>().orthographicSize / 50, transform.rigidbody2D.velocity.y);
         }
     }
