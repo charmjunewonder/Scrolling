@@ -2,6 +2,10 @@
 using System.Collections;
 
 public class MouseClick : MonoBehaviour {
+    public Texture cubeTexture;
+    public int cubeNumber = 0;
+    public int cubeTotalNumber = 5;
+
     private GameObject UI_Cube_Number;
     private GameObject camera;
     private GameObject charactor;
@@ -11,6 +15,10 @@ public class MouseClick : MonoBehaviour {
     private GameObject cube;
     private int count = 0;
     private bool isHouse;
+    private bool duringPickUp = false;
+    private Vector2 cubePos;
+    private float timer = 0;
+
 	// Use this for initialization
 	void Start () 
     {
@@ -35,8 +43,11 @@ public class MouseClick : MonoBehaviour {
             {
                 cube = hit.collider.gameObject;
                 cube.transform.parent = camera.transform;
+                duringPickUp = true;
+                cubePos = camera.camera.WorldToScreenPoint(cube.transform.position); ;
+                Destroy(cube);
 
-                StartCoroutine(GoToHell());
+                //StartCoroutine(GoToHell());
             }
 
         }
@@ -105,15 +116,42 @@ public class MouseClick : MonoBehaviour {
 
             cube.transform.position = Vector3.Lerp(cube.transform.position, endPos, timer);
             timer += 0.01f;
-            if (timer < 0.261f && timer > 0.259f)
-            {
-                camera.GetComponent<CameraController>().cubeNumber++;
 
-            }
             yield return new WaitForSeconds(0.02f);
         }
         Destroy(cube);
     }
+    void OnGUI()
+    {
+        int defaultWidth = 1600;
+        float widthRatio = Screen.width * 1.0f / defaultWidth;
+        float width = cubeTexture.width * 0.1f * widthRatio;
+        float height = cubeTexture.height * 0.1f * widthRatio;
+        GUI.DrawTexture(new Rect(Screen.width * 0.03f, Screen.height * 0.03f, width, height), cubeTexture);
+        GUIStyle style = new GUIStyle();
+        style.fontSize = Mathf.FloorToInt(30 * widthRatio);
+        style.normal.textColor = Color.white;
+        GUI.Label(new Rect(Screen.width * 0.07f, Screen.height * 0.035f, 50 * widthRatio, 50 * widthRatio),
+                cubeNumber + "/" + cubeTotalNumber, style);
 
+        if (duringPickUp)
+        {
+            Vector2 endPos = new Vector2(Screen.width * 0.07f - width / 2, Screen.height - Screen.height * 0.035f - height / 2);
+            cubePos = Vector2.Lerp(cubePos, endPos, timer);
+            timer += 0.01f;
+
+            if (timer < 0.261f && timer > 0.259f)
+            {
+                cubeNumber++;
+            }
+            if (timer > 0.4f)
+            {
+                timer = 0;
+                duringPickUp = false;
+            }
+            GUI.DrawTexture(new Rect(cubePos.x - width / 2, Screen.height - cubePos.y - height / 2, width, height), cubeTexture);
+
+        }
+    }
 
 }

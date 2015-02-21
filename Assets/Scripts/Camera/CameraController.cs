@@ -7,10 +7,8 @@ public class CameraController : MonoBehaviour {
 	public float cameraSize;
 	public float ground = -45.51134f;
     public GameObject blackPlane;
-    public GameObject UI_Cube_Number;
-    public GameObject UI_Cube;
-    public int cubeNumber = 0;
-    public int cubeTotalNumber = 5;
+
+
 
 	private float scrollingTimer;
 	private bool isZoomingOut;
@@ -19,7 +17,6 @@ public class CameraController : MonoBehaviour {
     
     private Vector3 targetPosition;
     
-    public Texture aTexture;
 
     private bool scrollingLock;
 	// Use this for initialization
@@ -28,8 +25,7 @@ public class CameraController : MonoBehaviour {
 		scrollingTimer = 0;
 		previousCharacterPos = Vector3.zero;
         blackPlane.renderer.material.SetColor("_Color", new Color(0, 0, 0, 0));
-        UI_Cube_Number.GetComponent<TextMesh>().text = " ";
-        UI_Cube_Number.GetComponent<TextMesh>().text = "0/5";
+
 	}
 	
 	// Update is called once per frame
@@ -116,15 +112,9 @@ public class CameraController : MonoBehaviour {
 				scrollingTimer = 0;
 			}
 		}
-        updateUI();
+        
 		previousCharacterPos = character.transform.position;
 	}
-
-    private void updateUI(){
-        float size = transform.GetComponent<Camera>().orthographicSize;
-        UI_Cube_Number.transform.localPosition = new Vector3(-size, size, 5);
-        UI_Cube.transform.localPosition = new Vector3(-size, size, 5);
-    }
 
     public void fakeToBlack()
     {
@@ -172,18 +162,5 @@ public class CameraController : MonoBehaviour {
         character.transform.position = pos;
         blackPlane.SetActive(false);
         blackPlane.renderer.material.SetColor("_Color", new Color(0, 0, 0, 0));
-    }
-
-    void OnGUI() {
-        int defaultWidth = 1600;
-        float widthRatio = Screen.width * 1.0f/ defaultWidth;
-        float width = aTexture.width*0.1f*widthRatio;
-        float height = aTexture.height*0.1f*widthRatio;
-        GUI.DrawTexture(new Rect(Screen.width * 0.03f, Screen.height * 0.03f, width, height), aTexture);
-        GUIStyle style = new GUIStyle();
-        style.fontSize = Mathf.FloorToInt(30*widthRatio);
-        style.normal.textColor = Color.white;
-        GUI.Label(new Rect(Screen.width * 0.07f, Screen.height * 0.035f, 50*widthRatio, 50*widthRatio), 
-                cubeNumber + "/" + cubeTotalNumber, style);
     }
 }
