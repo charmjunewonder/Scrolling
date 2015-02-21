@@ -87,24 +87,33 @@ public class MouseClick : MonoBehaviour {
             }
 
         }
+
+
 	}
 
     IEnumerator GoToHell()
     {
+        // might use GUI to draw the cube
         float timer = 0;
+        Vector3 endPos = camera.camera.ScreenToWorldPoint(new Vector3(57, 635, 5));
+        Debug.Log(endPos);
+
         while (timer <= 1)
         {
-            cube.transform.localPosition = Vector3.Lerp(cube.transform.localPosition, endPosition, timer);
+
+            endPos = camera.camera.ScreenToWorldPoint(new Vector3(57, 635, 5));
+
+            cube.transform.position = Vector3.Lerp(cube.transform.position, endPos, timer);
             timer += 0.01f;
             if (timer < 0.261f && timer > 0.259f)
             {
-                string s = UI_Cube_Number.GetComponent<TextMesh>().text;
-                string snumber = s.Substring(0, 1);
-                int number = int.Parse(snumber) + 1;
-                UI_Cube_Number.GetComponent<TextMesh>().text = number + s.Substring(1);
+                camera.GetComponent<CameraController>().cubeNumber++;
+
             }
             yield return new WaitForSeconds(0.02f);
         }
         Destroy(cube);
     }
+
+
 }
