@@ -11,6 +11,7 @@ public class CharacterController : MonoBehaviour {
     private float topAngle;
     private float sideAngle;
     private bool[] flags;
+    public SideCollider[] sideColliders;
 	// Use this for initialization
 	void Start () {
         camera = GameObject.Find("Main Camera");
@@ -20,10 +21,14 @@ public class CharacterController : MonoBehaviour {
         topAngle = Mathf.Atan(size.x / size.y) * Mathf.Rad2Deg;
         sideAngle = 90.0f - topAngle;
         flags = new bool[4];
+        //sideColliders = GameObject.FindGameObjectsWithTag("SideCollider");
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+        Debug.Log("top " + sideColliders[0].isDetached + ", bottom " + sideColliders[1].isDetached + ", left " + sideColliders[2].isDetached + ", right " + sideColliders[3].isDetached);
+ 
 
         prevol = transform.rigidbody2D.velocity;  
 		if (Input.GetKey (KeyCode.A)) {
@@ -44,7 +49,7 @@ public class CharacterController : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 3)
         {
-            Debug.Log(camera.GetComponent<Camera>().orthographicSize);
+            //Debug.Log(camera.GetComponent<Camera>().orthographicSize);
             transform.rigidbody2D.velocity = new Vector2(0, (50 + camera.GetComponent<Camera>().orthographicSize) / 2);
             jumpCount++;
         }
@@ -57,26 +62,16 @@ public class CharacterController : MonoBehaviour {
         }*/
 	}
 
-    void FixedUpdate()
-    {
-        Debug.Log("top " + flags[0] + ", right " + flags[1] + ", left " + flags[2] + ", bottom " + flags[3]);
-        allowToScale();
-        for (int i = 0; i < 4; i++)
-        {
-            flags[i] = false;
-        }
-    }
-
     public bool allowToScale()
     {
-        if (flags[0] && flags[3])
+        if (sideColliders[0].isDetached && sideColliders[1].isDetached)
         {
-            Debug.Log("Vertical");
+            //Debug.Log("Vertical");
             return false;
         }
-        if (flags[0] && flags[3])
+        if (sideColliders[2].isDetached && sideColliders[3].isDetached)
         {
-            Debug.Log("Horizontal");
+            //Debug.Log("Horizontal");
             return false;
         }
         return true;
@@ -136,56 +131,8 @@ public class CharacterController : MonoBehaviour {
             jumpCount = 0;
             //transform.rigidbody2D.velocity = new Vector2(30 * camera.GetComponent<Camera>().orthographicSize / 50, transform.rigidbody2D.velocity.y);
         }
-        for (int i = 0; i < coll.contacts.Length; i++)
-        {
-            Vector3 v = (Vector3)coll.contacts[i].point - transform.position;
-
-            if (Vector3.Angle(v, transform.up) <= topAngle)
-            {
-                flags[0] = true;//top
-            }
-            else if (Vector3.Angle(v, transform.right) <= sideAngle)
-            {
-                flags[1] = true;//right
-            }
-            else if (Vector3.Angle(v, -transform.right) <= sideAngle)
-            {
-                flags[2] = true;//left
-            }
-            else
-            {
-                flags[3] = true;//bottom
-            }
-        }
     }
 
-    void OnCollisionStay2D(Collision2D coll)
-    {
-
-        Debug.Log("Lenth: "+coll.contacts.Length);
-        for (int i = 0; i < coll.contacts.Length; i++)
-        {
-            Vector3 v = (Vector3)coll.contacts[i].point - transform.position;
-
-            if (Vector3.Angle(v, transform.up) <= topAngle)
-            {
-                flags[0] = true;//top
-            }
-            else if (Vector3.Angle(v, transform.right) <= sideAngle)
-            {
-                flags[1] = true;//right
-            }
-            else if (Vector3.Angle(v, -transform.right) <= sideAngle)
-            {
-                flags[2] = true;//left
-            }
-            else
-            {
-                flags[3] = true;//bottom
-            }
-        }
-
-    }
 
     void OnTriggerEnter2D(Collider2D coll)
     {
