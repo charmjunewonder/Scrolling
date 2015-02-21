@@ -42,10 +42,15 @@ public class MouseClick : MonoBehaviour {
             if (hit.collider.gameObject.tag == "Cube")
             {
                 cube = hit.collider.gameObject;
-                cube.transform.parent = camera.transform;
-                duringPickUp = true;
-                cubePos = camera.camera.WorldToScreenPoint(cube.transform.position); ;
-                Destroy(cube);
+                float distance = Vector2.Distance(cube.transform.position, charactor.transform.position);
+                Debug.Log(distance);
+                if (distance < 25 * transform.GetComponent<Camera>().orthographicSize / 50)
+                {
+                    cube.transform.parent = camera.transform;
+                    duringPickUp = true;
+                    cubePos = camera.camera.WorldToScreenPoint(cube.transform.position); ;
+                    Destroy(cube);
+                }
 
                 //StartCoroutine(GoToHell());
             }
@@ -102,25 +107,6 @@ public class MouseClick : MonoBehaviour {
 
 	}
 
-    IEnumerator GoToHell()
-    {
-        // might use GUI to draw the cube
-        float timer = 0;
-        Vector3 endPos = camera.camera.ScreenToWorldPoint(new Vector3(57, 635, 5));
-        Debug.Log(endPos);
-
-        while (timer <= 1)
-        {
-
-            endPos = camera.camera.ScreenToWorldPoint(new Vector3(57, 635, 5));
-
-            cube.transform.position = Vector3.Lerp(cube.transform.position, endPos, timer);
-            timer += 0.01f;
-
-            yield return new WaitForSeconds(0.02f);
-        }
-        Destroy(cube);
-    }
     void OnGUI()
     {
         int defaultWidth = 1600;

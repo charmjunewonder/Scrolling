@@ -27,7 +27,7 @@ public class CharacterController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        Debug.Log("top " + sideColliders[0].isDetached + ", bottom " + sideColliders[1].isDetached + ", left " + sideColliders[2].isDetached + ", right " + sideColliders[3].isDetached);
+        //Debug.Log("top " + sideColliders[0].isDetached + ", bottom " + sideColliders[1].isDetached + ", left " + sideColliders[2].isDetached + ", right " + sideColliders[3].isDetached);
  
 
         prevol = transform.rigidbody2D.velocity;  
