@@ -4,6 +4,9 @@ using System.Collections;
 public class CharacterController : MonoBehaviour {
     public GameObject scalableObject;
     public bool hasScalableObject;
+    public int cubeNumber;
+
+
     private float deltaLength;
     private GameObject camera;
     private int jumpCount = 0;
@@ -21,6 +24,7 @@ public class CharacterController : MonoBehaviour {
         topAngle = Mathf.Atan(size.x / size.y) * Mathf.Rad2Deg;
         sideAngle = 90.0f - topAngle;
         flags = new bool[4];
+        cubeNumber = 0;
         //sideColliders = GameObject.FindGameObjectsWithTag("SideCollider");
 	}
 	
@@ -138,11 +142,11 @@ public class CharacterController : MonoBehaviour {
     {
         if (coll.gameObject.tag == "FallingTrigger")
         {
-            camera.GetComponent<CameraController>().fakeToBlack();
+            camera.GetComponent<CameraController>().fakeToBlack(-1);
         }
         else if (coll.gameObject.tag == "UpTrigger")
         {
-            camera.GetComponent<CameraController>().fakeToBlackUp();
+            camera.GetComponent<CameraController>().fakeToBlack(1);
         }
     }
 }

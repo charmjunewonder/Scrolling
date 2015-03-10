@@ -116,14 +116,14 @@ public class CameraController : MonoBehaviour {
 		previousCharacterPos = character.transform.position;
 	}
 
-    public void fakeToBlack()
+    public void fakeToBlack(int stage)
     {
         blackPlane.renderer.material.SetColor("_Color", new Color(0, 0, 0, 0));
         blackPlane.SetActive(true);
-        StartCoroutine(fake());
+        StartCoroutine("fake", stage);
     }
 
-    IEnumerator fake()
+    IEnumerator fake(int stage)
     {
         float num = 0;
         for (int i = 0; i < 50; i++)
@@ -133,34 +133,21 @@ public class CameraController : MonoBehaviour {
             yield return new WaitForSeconds(0.02f);
         }
         Vector3 pos = character.transform.position;
-        pos.x = 686.8f;
-        pos.y = -666.1f;
-        character.transform.position = pos;
-        blackPlane.SetActive(false);
-        blackPlane.renderer.material.SetColor("_Color", new Color(0, 0, 0, 0));
-    }
-
-    public void fakeToBlackUp()
-    {
-        blackPlane.renderer.material.SetColor("_Color", new Color(0, 0, 0, 0));
-        blackPlane.SetActive(true);
-        StartCoroutine(fakeUp());
-    }
-
-    IEnumerator fakeUp()
-    {
-        float num = 0;
-        for (int i = 0; i < 50; i++)
+        if (stage == -1)
         {
-            num += 0.02f;
-            blackPlane.renderer.material.SetColor("_Color", new Color(0, 0, 0, num));
-            yield return new WaitForSeconds(0.02f);
+            pos.x = 686.8f;
+            pos.y = -666.1f;
+            character.transform.position = pos;
+            blackPlane.SetActive(false);
+            blackPlane.renderer.material.SetColor("_Color", new Color(0, 0, 0, 0));
         }
-        Vector3 pos = character.transform.position;
-        pos.x = 555;
-        pos.y = -49f;
-        character.transform.position = pos;
-        blackPlane.SetActive(false);
-        blackPlane.renderer.material.SetColor("_Color", new Color(0, 0, 0, 0));
+        else if (stage == 1)
+        {
+            pos.x = 555;
+            pos.y = -49f;
+            character.transform.position = pos;
+            blackPlane.SetActive(false);
+            blackPlane.renderer.material.SetColor("_Color", new Color(0, 0, 0, 0));
+        }
     }
 }

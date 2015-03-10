@@ -10,11 +10,13 @@ public class MouseClick : MonoBehaviour {
     private GameObject camera;
     private GameObject charactor;
     private GameObject house;
+    private GameObject stick;
     private Quaternion defaultRotation;
     private Vector3 endPosition;
     private GameObject cube;
     private int count = 0;
     private bool isHouse;
+    private bool isStick;
     private bool duringPickUp = false;
     private Vector2 cubePos;
     private float timer = 0;
@@ -26,8 +28,11 @@ public class MouseClick : MonoBehaviour {
         camera = GameObject.Find("Main Camera");
         charactor = GameObject.Find("Character");
         house = GameObject.Find("House");
+        stick = GameObject.Find("Stick");
         endPosition = new Vector2(-83, 44);
         isHouse = false;
+        isStick = false;
+
 	}
 	
 	// Update is called once per frame
@@ -43,16 +48,19 @@ public class MouseClick : MonoBehaviour {
             {
                 cube = hit.collider.gameObject;
                 float distance = Vector2.Distance(cube.transform.position, charactor.transform.position);
-                Debug.Log(distance);
+
                 if (distance < 25 * transform.GetComponent<Camera>().orthographicSize / 50)
                 {
                     cube.transform.parent = camera.transform;
                     duringPickUp = true;
-                    cubePos = camera.camera.WorldToScreenPoint(cube.transform.position); ;
+                    cubePos = camera.camera.WorldToScreenPoint(cube.transform.position);
+                    charactor.GetComponent<CharacterController>().cubeNumber++;
                     Destroy(cube);
                 }
-
-                //StartCoroutine(GoToHell());
+                if (charactor.GetComponent<CharacterController>().cubeNumber == 5)
+                {
+                    camera.GetComponent<CameraController>().fakeToBlack(0);
+                }
             }
 
         }
@@ -71,16 +79,23 @@ public class MouseClick : MonoBehaviour {
                     charactor.GetComponent<CharacterController>().scalableObject = house;
                     house.layer = 0;
 
-                    float deltaLength = house.transform.position.x - charactor.transform.position.x;
                     house.transform.parent = charactor.transform;
                     isHouse = true;
+                }
+                else if (hit.collider.gameObject.name == "Stick")
+                {
+                    charactor.GetComponent<CharacterController>().hasScalableObject = true;
+                    charactor.GetComponent<CharacterController>().scalableObject = stick;
+                    stick.layer = 0;
+                    stick.transform.parent = charactor.transform;
+                    isStick = true;
+
+
                 }
                 else
                 {
                     charactor.GetComponent<CharacterController>().hasScalableObject = true;
                     charactor.GetComponent<CharacterController>().scalableObject = hit.collider.gameObject;
-
-                    float deltaLength = hit.collider.gameObject.transform.position.x - charactor.transform.position.x;
 
                     hit.collider.gameObject.transform.parent = charactor.transform;
                 }
@@ -92,13 +107,18 @@ public class MouseClick : MonoBehaviour {
         {
             if (isHouse)
             {
-                Debug.Log("@@@");
                 house.layer = LayerMask.NameToLayer("Ground");
                 isHouse = false;
             }
-            charactor.GetComponent<CharacterController>().hasScalableObject = false;
+            if (isStick)
+            {
+                stick.layer = LayerMask.NameToLayer("Ground");
+                isStick = false;
+            }
+           
             if (charactor.GetComponent<CharacterController>().scalableObject != null)
             {
+                charactor.GetComponent<CharacterController>().hasScalableObject = false;
                 charactor.GetComponent<CharacterController>().scalableObject.transform.parent = null;
             }
 
